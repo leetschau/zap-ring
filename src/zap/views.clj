@@ -46,14 +46,13 @@
 (defn new-project []
   (base-page
    "New Project - Zap"
-
-   [:h1 "Create a new project"]
-
-   (form-to
-    {:class :form-horizontal}
-    [:post "/projects"]
-    (text-field :name)
-    (submit-button {:class "btn btn-primary"} "Add Project"))))
+   (html
+     [:h1 "Create a new project"]
+     (form-to
+      {:class :form-horizontal}
+      [:post "/projects"]
+      (text-field :name "New Project Name")
+      (submit-button {:class "btn btn-primary"} "Add Project"))) ))
 
 (defn make-project [params]
   (models/create-project params)
@@ -65,53 +64,55 @@
   (let [proj (models/project-by-id id)]
     (base-page
      (str (:name proj) " - Zap")
+     (html
+       [:div.row.admin-bar
+        [:a {:href (str "/project/" (:id proj) "/issue/new")}
+         "New Issue"]]
 
-     [:div.row.admin-bar
-      [:a {:href (str "/project/" (:id proj) "/issue/new")}
-       "New Issue"]]
+       [:h1 (:name proj)]
 
-     [:h1 (:name proj)]
-
-     [:table.table
-      [:thead
-       [:tr
-        [:th.span1 {:scope :col} "#"]
-        [:th.span10 {:scope :col} "Title"]
-        [:th.span1 {:scope :col} "Status"]]]
-      [:tbody
-       (for [iss (models/issues-by-project (:id proj))]
-         (let [row (fn [& content]
-                     [:td
-                      (into [:a {:href (str "/issue/" (:id iss))}]
-                            content)])]
-           [:tr
-            (row (:id iss))
-            (row (:title iss))
-            (row (:status_name iss))]))]])))
+       [:table.table
+        [:thead
+         [:tr
+          [:th.span1 {:scope :col} "#"]
+          [:th.span10 {:scope :col} "Title"]
+          [:th.span1 {:scope :col} "Status"]]]
+        [:tbody
+         (for [iss (models/issues-by-project (:id proj))]
+           (let [row (fn [& content]
+                       [:td
+                        (into [:a {:href (str "/issue/" (:id iss))}]
+                              content)])]
+             [:tr
+              (row (:id iss))
+              (row (:title iss))
+              (row (:status_name iss))]))]]))))
 
 (defn new-issue [id]
   (let [proj (models/project-by-id id)]
     (base-page
      (str "New Issue for " (:name proj) " - Zap")
+     (html
 
-     [:h1 "New Issue for " (:name proj)]
+       [:h1 "New Issue for " (:name proj)]
 
-     (form-to
-      [:post (str "/project/" (:id proj) "/issues")]
-      (text-field {:class "span8"
-                   :type :text
-                   :placeholder "Title"} :title)
-      [:br]
-      (text-area {:class "span8"
-                  :placeholder "Description"
-                  :rows 5} :description)
-      [:br]
-      (submit-button {:class "btn btn-primary"} "Create Issue")))))
+       (form-to
+        [:post (str "/project/" (:id proj) "/issues")]
+        (text-field {:class "span8"
+                     :type :text
+                     :placeholder "Title"} :title)
+        [:br]
+        (text-area {:class "span8"
+                    :placeholder "Description"
+                    :rows 5} :description)
+        [:br]
+        (submit-button {:class "btn btn-primary"} "Create Issue"))))))
 
 (defn issue [id]
   (let [iss (models/issue-by-id id)]
     (base-page
      (str "#" id ": " (:title iss) " - Zap")
+     (html 
 
      [:h1 "#" id ": " (:title iss)]
 
@@ -167,7 +168,7 @@
      (when-let [comments (models/comments-by-issue id)]
        [:div.comments
         (for [comm comments]
-          [:p.comment (:content comm)])]))))
+          [:p.comment (:content comm)])])))))
 
 (defn make-issue [id params]
   (let [iss (merge params {:project_id id :status 1})]

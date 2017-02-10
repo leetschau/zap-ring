@@ -44,10 +44,6 @@
 
 ;
 (defroutes app-routes
-  (GET "/foo" [& params]
-    {:status 200
-     :headers {"content-type" "text/plain"}
-     :body (pr-str req)})
   (GET "/" [] ;;(1)
     (views/index))
   (GET "/projects" []

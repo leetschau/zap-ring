@@ -80,7 +80,8 @@
           (where {:id id})))
 
 (defn create-issue [params]
-  (insert issue (values (select-keys params [:project_id :description :status]))))
+  (println params)
+  (insert issue (values (select-keys params [:project_id :title :description :status]))))
 
 (defn create-comment [params]
   (insert comment (values (select-keys params [:issue_id :content]))))
